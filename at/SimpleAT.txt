@@ -1,19 +1,13 @@
 ^declare DeveloperWallet
-^declare AmountNeeded
 ^declare AmountToReturn
 ^declare LastTransaction
 ^declare ValidTransaction
-^declare AmountSentByUser
 ^declare WalletBalance
 
 ^comment Init runs once and never again.
 Init:
 ^comment setting my address
 SET @DeveloperWallet #6e4e78e8e25f59bd
-^comment 50 Burst Needed for Dev to pay out
-SET @AmountNeededDev #000000012a05f200
-^comment 30 Burst Needed if not AT goes into negative.
-SET @AmountNeeded #00000000b2d05e00
 ^comment Return 20 Burst
 SET @AmountToReturn #0000000077359400
 
@@ -28,10 +22,6 @@ FUN @ValidTransaction check_A_Is_Zero
 BZR $ValidTransaction :DeveloperFund
 ^comment Update Last Transaction
 FUN @LastTransaction get_Timestamp_for_Tx_in_A
-^comment Figure out how much was sent
-FUN @AmountSentByUser get_Amount_for_Tx_in_A
-^comment If amount sent by user is less then amount needed, skip him.
-BLE $AmountSentByUser $AmountNeeded :Update
 ^comment Send 20 BURST back
 FUN B_to_Address_of_Tx_in_A
 FUN send_to_Address_in_B $AmountToReturn
@@ -41,12 +31,13 @@ JMP :Update
 DeveloperFund:
 ^comment Get The Current Balance of the wallet.
 FUN @WalletBalance get_Current_Balance
-^comment if the wallet balance is <= 50 Send me 20.
-BLE $WalletBalance $AmountNeededDev :Finish
+^comment if the wallet balance is <20, dont send.
+BLE $WalletBalance $AmountToReturn :Finish
+^comment Leave 20 BURST in the Wallet and return the rest.
+SUB @WalletBalance $AmountToReturn
 ^comment set B1 to Developer.
 FUN set_B1 $DeveloperWallet
-^comment Send Money to Developer
-FUN send_to_Address_in_B $AmountToReturn
+FUN send_to_Address_in_B $WalletBalance
 
 Finish:
 ^comment Finish the AT and set 
