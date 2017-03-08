@@ -1,3 +1,4 @@
 # BurstAT
-BURSTCOIN Automated Transactions Research and Development
-Refer to wiki for details. https://github.com/antonyip/BurstAT/wiki
+BURSTCOIN Automated Transactions Research and Development  
+  
+https://github.com/antonyip/BurstAT/wiki  
