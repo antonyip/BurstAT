@@ -1,0 +1,57 @@
+^declare ticket_price
+^declare countdown_minutes
+^declare percent_payout
+^declare percent_dev
+^declare percent_other
+^declare dev_address
+^declare other_address
+^declare end_block
+^declare current_winner
+^declare last_pot
+^declare last_tx
+^declare one_hundred
+^declare temp
+^declare temp2
+FUN @end_block get_Block_Timestamp
+FUN @end_block add_Minutes_to_Timestamp $end_block $countdown_minutes
+FUN @last_tx get_Creation_Timestamp
+SET @one_hundred #0000000000000064
+PCS
+start:
+FUN A_to_Tx_after_Timestamp $last_tx
+FUN @temp check_A_Is_Zero
+FIZ $temp
+FUN @last_tx get_Timestamp_for_Tx_in_A
+BGT $last_tx $end_block :payout
+process:
+FUN @temp get_Amount_for_Tx_in_A
+BLT $temp $ticket_price :start
+FUN B_to_Address_of_Tx_in_A
+FUN @current_winner get_B1
+FUN @end_block get_Block_Timestamp
+FUN @end_block add_Minutes_to_Timestamp $end_block $countdown_minutes
+JMP :start
+payout:
+FUN @last_pot get_Current_Balance
+SET @temp $last_pot
+DIV @temp $one_hundred
+SET @temp2 $temp
+MUL @temp2 $percent_payout
+FUN clear_B
+FUN set_B1 $current_winner
+FUN send_to_Address_in_B $temp2
+SET @temp2 $temp
+MUL @temp2 $percent_dev
+FUN clear_B
+FUN set_B1 $dev_address
+FUN send_to_Address_in_B $temp2
+SET @temp2 $temp
+MUL @temp2 $percent_other
+FUN clear_B
+FUN set_B1 $other_address
+FUN send_to_Address_in_B $temp2
+FUN @end_block get_Block_Timestamp
+FUN @end_block add_Minutes_to_Timestamp $end_block $countdown_minutes
+JMP :process
+
+350003070000003706040700000007000000010000003501030a000000010b0000006400000000000000303304030a0000003525010c000000260c0000003507030a0000001f0a00000007000000403506030c000000200c00000000000000d5320a0335040108000000350003070000003706040700000007000000010000001a2b00000035000409000000020c00000009000000090c0000000b000000020d0000000c000000080d00000002000000322101331601080000003302040d000000020d0000000c000000080d00000003000000322101331601050000003302040d000000020d0000000c000000080d00000004000000322101331601060000003302040d000000350003070000003706040700000007000000010000001a4f000000
