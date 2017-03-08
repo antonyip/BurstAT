@@ -40,11 +40,13 @@ DeveloperFund:
 ^comment Get The Current Balance of the wallet.
 FUN get_Current_Balance $WalletBalance
 ^comment if the wallet balance is <= 50 Send me 20.
-BLE $WalletBalance $AmountNeeded :Update
+BLE $WalletBalance $AmountNeeded :Finish
 ^comment set B1 to Developer.
 FUN set_B1 $DeveloperWallet
 ^comment Send Money to Developer
 FUN send_to_Address_in_B $AmountToReturn
+
+Finish:
 ^comment Finish the AT and set 
 FIN
 
