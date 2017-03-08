@@ -10,8 +10,10 @@
 Init:
 ^comment setting my address
 SET @DeveloperWallet #6e4e78e8e25f59bd
-^comment 50 Burst Needed
-SET @AmountNeeded #000000012a05f200
+^comment 50 Burst Needed for Dev to pay out
+SET @AmountNeededDev #000000012a05f200
+^comment 30 Burst Needed if not AT goes into negative.
+SET @AmountNeeded #00000000b2d05e00
 ^comment Return 20 Burst
 SET @AmountToReturn #0000000077359400
 
@@ -40,7 +42,7 @@ DeveloperFund:
 ^comment Get The Current Balance of the wallet.
 FUN @WalletBalance get_Current_Balance
 ^comment if the wallet balance is <= 50 Send me 20.
-BLE $WalletBalance $AmountNeeded :Finish
+BLE $WalletBalance $AmountNeededDev :Finish
 ^comment set B1 to Developer.
 FUN set_B1 $DeveloperWallet
 ^comment Send Money to Developer
