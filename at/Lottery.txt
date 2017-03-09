@@ -23,6 +23,7 @@ SET @MinNumPlayers #0000000000000002
 SET @WinnerPercent #0000000000000050
 SET @GameEndBlocks #0000000500000000
 ^comment by default, the creator wins.
+INC @TotalTicketsBoughtPreviously
 FUN B_to_Address_of_Creator
 FUN @CurrentWinner get_B1
 
