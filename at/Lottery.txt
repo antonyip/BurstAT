@@ -46,17 +46,17 @@ FUN @NewTickets get_Amount_for_Tx_in_A
 ADD @NewTickets $TicketPrice
 DIV @NewTickets $TicketPrice
 ^comment run internal lottery based on past tickets
-SET @TotalTicketsBoughtPreviously $TotalTicketsBought
-ADD @TotalTicketsBoughtPreviously $NewTickets
+SET @TotalTicketsBought $TotalTicketsBoughtPreviously
+ADD @TotalTicketsBought $NewTickets
 ^comment Random Number Generator
 FUN @MyRandomNumber get_A1
 ^comment based on random number, figure out who won.
-MOD @MyRandomNumber $TotalTicketsBoughtPreviously
-BGT $MyRandomNumber $TotalTicketsBought :ChangeWinner
+MOD @MyRandomNumber $TotalTicketsBought
+BGT $MyRandomNumber $TotalTicketsBoughtPreviously :ChangeWinner
 
 UpdateNewPlayerContinue:
 ^comment update the totalnumber of tickets now
-SET @TotalTicketsBought $TotalTicketsBoughtPreviously
+SET @TotalTicketsBoughtPreviously $TotalTicketsBought
 JMP :UpdateNewPlayerLoop
 
 ChangeWinner:
@@ -76,8 +76,6 @@ BGT $CurrentTime $EndTime :CloseAuction
 JMP :End
 
 SetEndTime:
-^comment do not set endtime again if it has been set
-BNZ $EndTime :EndTimeSetted
 ^comment do not set endtime if there are not enough players
 BLT $TotalTicketsBought $MinNumPlayers :EndTimeSetted
 ^comment set the end time to EndTime.
