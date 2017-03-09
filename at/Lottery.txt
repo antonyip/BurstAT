@@ -50,10 +50,10 @@ DIV @NewTickets $TicketPrice
 SET @TotalTicketsBought $TotalTicketsBoughtPreviously
 ADD @TotalTicketsBought $NewTickets
 ^comment Random Number Generator
-FUN @MyRandomNumber get_A1
+SET @MyRandomNumber $CurrentTime
 ^comment based on random number, figure out who won.
 MOD @MyRandomNumber $TotalTicketsBought
-BGT $MyRandomNumber $TotalTicketsBoughtPreviously :ChangeWinner
+BGE $MyRandomNumber $TotalTicketsBoughtPreviously :ChangeWinner
 
 UpdateNewPlayerContinue:
 ^comment update the totalnumber of tickets now
