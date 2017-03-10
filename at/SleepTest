@@ -1,0 +1,17 @@
+^declare CurrentTime
+^declare SleepTillThisTime
+^declare Counter
+
+FUN @CurrentTime get_Block_Timestamp
+^comment set the AT to activate 5 blocks later.
+SET @SleepTillThisTime #0000000500000000
+ADD @SleepTillThisTime $CurrentTime
+
+Update:
+PCS
+FUN @CurrentTime get_Block_Timestamp
+SLP $SleepTillThisTime
+INC @Counter
+SET @SleepTillThisTime #0000000500000000
+ADD @SleepTillThisTime $CurrentTime
+JMP :Update
