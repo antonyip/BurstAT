@@ -4,8 +4,11 @@
 
 FUN @CurrentTime get_Block_Timestamp
 ^comment set the AT to activate 5 blocks later.
+SET @Buffer #00000000ffffffff
 SET @SleepTillThisTime #0000000500000000
 ADD @SleepTillThisTime $CurrentTime
+^comment Seems like sleep requires the values in the lower 32bit instead of the higher 32bit. (Cheap Shift)
+DIV @SleepTillThisTime $Buffer
 
 Update:
 PCS
@@ -14,4 +17,6 @@ SLP $SleepTillThisTime
 INC @Counter
 SET @SleepTillThisTime #0000000500000000
 ADD @SleepTillThisTime $CurrentTime
+^comment Seems like sleep requires the values in the lower 32bit instead of the higher 32bit. (Cheap Shift)
+DIV @SleepTillThisTime $Buffer
 JMP :Update
