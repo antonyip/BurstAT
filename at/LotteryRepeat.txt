@@ -1,0 +1,114 @@
+^declare TicketPrice
+^declare MinNumPlayers
+^declare WinnerPercent
+^declare GameEndBlocks
+^declare CurrentWinner
+^declare LastTransaction
+^declare ValidTransaction
+^declare NewTickets
+^declare TotalTicketsBoughtPreviously
+^declare TotalTicketsBought
+^declare MyRandomNumber
+^declare EndTime
+^declare ScratchBuffer
+^declare CurrentBalance
+^declare OriginalCurrentBalance
+^declare HostPercent
+
+^comment If this is the first time running, set some default variables.
+Start:
+^comment 50 Burst per ticket. min fee should = this.
+SET @TicketPrice #000000012a05f200
+SET @MinNumPlayers #0000000000000003
+SET @WinnerPercent #0000000000000050
+SET @HostPercent #000000000000000a
+^comment GameEnds in 50 Block automatically
+SET @GameEndBlocks #0000000000000032
+
+Restart:
+^comment by default, the creator wins.
+CLR @EndTime
+CLR @TotalTicketsBought
+SET @TotalTicketsBoughtPreviously #0000000000000001
+FUN B_to_Address_of_Creator
+FUN @CurrentWinner get_B1
+
+^comment when the program starts for the next time, it will start from here.
+PCS
+Update:
+
+
+UpdateNewPlayerLoop:
+^comment new way of grabbing transactions
+FUN A_to_Tx_after_Timestamp $LastTransaction
+FUN @ValidTransaction check_A_Is_Zero
+BZR $ValidTransaction :NoMoreTx
+FUN @LastTransaction get_Timestamp_for_Tx_in_A
+
+^comment check how much the PlayerPaid and convert to tickets
+FUN @NewTickets get_Amount_for_Tx_in_A
+ADD @NewTickets $TicketPrice
+DIV @NewTickets $TicketPrice
+^comment run internal lottery based on past tickets
+SET @TotalTicketsBought $TotalTicketsBoughtPreviously
+ADD @TotalTicketsBought $NewTickets
+^comment Random Number Generator
+SET @MyRandomNumber $LastTransaction
+^comment based on random number, figure out who won.
+MOD @MyRandomNumber $TotalTicketsBought
+BGE $MyRandomNumber $TotalTicketsBoughtPreviously :ChangeWinner
+
+UpdateNewPlayerContinue:
+^comment update the totalnumber of tickets now
+SET @TotalTicketsBoughtPreviously $TotalTicketsBought
+JMP :UpdateNewPlayerLoop
+
+ChangeWinner:
+FUN B_to_Address_of_Tx_in_A
+FUN @CurrentWinner get_B1
+JMP :UpdateNewPlayerContinue
+
+NoMoreTx:
+^comment if the end time is not set, Try to set end time
+BZR $EndTime :SetEndTime
+
+EndTimeSetted:
+^comment if endtime is still not set, wait for more players.
+BZR $EndTime :End
+^comment if time is up, end the lottery
+BNZ $EndTime :CloseAuction
+JMP :End
+
+SetEndTime:
+^comment do not set endtime if there are not enough players
+BLT $TotalTicketsBought $MinNumPlayers :EndTimeSetted
+^comment set the end time to 1
+INC @EndTime
+SLP $GameEndBlocks
+JMP :Update
+
+^comment we select a winner here and kill the AT
+CloseAuction:
+FUN @CurrentBalance get_Current_Balance
+SET @OriginalCurrentBalance $CurrentBalance
+FUN set_B1 $CurrentWinner
+
+^comment calculate payout - total / 100 * pecent
+SET @ScratchBuffer #0000000000000064
+DIV @CurrentBalance $ScratchBuffer
+MUL @CurrentBalance $WinnerPercent
+FUN send_to_Address_in_B $CurrentBalance
+
+^comment Payout Host
+PayHost:
+DIV @OriginalCurrentBalance $ScratchBuffer
+MUL @OriginalCurrentBalance $HostPercent
+FUN B_to_Address_of_Creator
+FUN send_to_Address_in_B $OriginalCurrentBalance
+
+^comment reset the AT
+JMP :Restart
+^comment Missing End here to save BURST
+
+End:
+FIN
