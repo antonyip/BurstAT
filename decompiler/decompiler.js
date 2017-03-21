@@ -3,6 +3,7 @@ function DecompileCode()
     var codeString = document.getElementById("codeString").value;
     var arrayOfStrings = Decompile(codeString);
     PrintString(arrayOfStrings);
+    PrintReadableString(arrayOfStrings);
 }
 
 function Decompile(codeString)
@@ -46,6 +47,31 @@ function PrintString(arrayOfStrings)
         stringConcat += arrayOfStrings[i] + "<br/>";
     }
     outputHTML.innerHTML = stringConcat;
+}
+
+function PrintReadableString(arrayOfStrings)
+{
+    var outputHTML = document.getElementById("codeReadOutput");
+    var stringConcat = "";
+    for (i = 0; i < arrayOfStrings.length; i++)
+    {
+        stringConcat += opCodeToText(arrayOfStrings[i]) + "<br/>";
+    }
+    outputHTML.innerHTML = stringConcat;
+}
+
+function opCodeToText(opCodeAndVariable)
+{
+    var variables = opCodeAndVariable.split(" ");
+    var returnValue = "";
+    if (variables[0] == "01")
+    {
+        returnValue += "SET_VAL @" + variables[1] + " #" + variables[2];
+    }
+    
+    // todo:: finish this up. so lazy, can't move.
+    
+    return returnValue;
 }
 
 function ExtractOpCode(opCode, codeArray, index)
