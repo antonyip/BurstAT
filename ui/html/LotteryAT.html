@@ -1,7 +1,7 @@
 <html>
 <head>
 <title>
-Lottery AT By ant.
+Lottery AT By Lexicon.
 </title>
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -17,15 +17,20 @@ Lottery AT By ant.
         <h1 id="CurrentJackpot">
             Current Jackpot
         </h1>
-        <h1 id="CurrentJackpotPrice">
+        <h1 id="CurrentJackpotPool">
             XXXXX BURST
         </h1>
         <h2 id="CurrentJackpotSmall">
             You could be the next winner!
         </h2>    
-        <h3 id="Instuctions">
+        <h4 id="Instuctions">
             Send 50 BURST to BURST-9XJV-PNE4-89GA-4ZP58 to join the lottery!
-        </h3>
+        </h4>
+        <h4 id="Instuctions2">
+            50  BURST = 1 Ticket <br />
+            100 BURST = 2 Tickets <br />
+            500 BURST = 10 Tickets
+        </h4>        
         <h3 id="EndTime">
             Lottery ends at block 326343!
         </h3>
@@ -65,7 +70,6 @@ $(document).ready(
     function()
     {
         UpdateJackpot();
-        UpdateEndTime();
         UpdatePastWinners();
     }
 );
@@ -80,12 +84,15 @@ function UpdateJackpot()
 function UpdateJackpotReturn(data)
 {
     console.log(data);
+    var returnJson = JSON.parse(data);
+    document.getElementById("CurrentJackpotPool").innerHTML = parseInt(returnJson.balanceNQT) * 0.76 + "BURST"
     UpdateEndTime(data);
 }
 
 function UpdateEndTime(data)
 {
-    
+    var returnJson = JSON.parse(data);
+    document.getElementById("EndTime").innerHTML = "Lottery ends at block " + returnJson.nextBlock  + " !";
 }
 
 function UpdatePastWinners()
@@ -96,7 +103,7 @@ function UpdatePastWinners()
 
 function UpdatePastWinnersReturn(data)
 {
-
+    document.getElementById("PastWinners").innerHTML = "BURST-xxxx-xxxx-xxxx-xxxxx  || 113,000 BURST || Block 122545";
 }
 </script>
 
