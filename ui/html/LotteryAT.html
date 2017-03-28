@@ -1,7 +1,7 @@
 <html>
 <head>
 <title>
-Lottery AT By Lexicon.
+Lottery By Lexicon
 </title>
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -9,13 +9,36 @@ Lottery AT By Lexicon.
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <!-- Latest compiled JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<style type="text/css">
+ body
+ {
+    background-image: url('img/lottery/background.jpg');
+ }
+ 
+ .mainbody
+ {
+    background-color: #cccccc;
+    border: 5px solid;
+    border-radius: 25px;
+    border-color: brown;
+ }
+ 
+ .mainbody2
+ {
+    background-color: #cccccc;
+    border: 5px solid;
+    border-radius: 25px;
+    border-color: brown;
+ }
+</style>
+
 </head>
 <body>
 
 <div class="container">
-    <div class="jumbotron text-center">
+    <div class="jumbotron text-center mainbody">
         <h1 id="CurrentJackpot">
-            Current Jackpot
+            CURRENT JACKPOT
         </h1>
         <h1 id="CurrentJackpotPool">
             XXXXX BURST
@@ -24,21 +47,22 @@ Lottery AT By Lexicon.
             You could be the next winner!
         </h2>    
         <h4 id="Instuctions">
-            Send 50 BURST to BURST-9XJV-PNE4-89GA-4ZP58 to join the lottery!
+            Send 50 BURST to <strong><span style="color:darkred">BURST-9XJV-PNE4-89GA-4ZP58</span></strong> to join the lottery!
         </h4>
         <h4 id="Instuctions2">
-            50  BURST = 1 Ticket <br />
-            100 BURST = 2 Tickets <br />
-            500 BURST = 10 Tickets
+            Purchase 1 Ticket for 50 BURST....<br />
+            Purchase 2 Tickets for 100 BURST...<br />
+            Purchase 10 Tickets for 500 BURST...<br />
+            so on and so forth!
         </h4>        
         <h3 id="EndTime">
-            Lottery ends at block 326343!
+            Lottery ends at block 000000!
         </h3>
     </div>
 </div>
 
 <div class="container">
-    <div class="jumbotron text-center">
+    <div class="jumbotron text-center mainbody2">
     <h2>
         Past Winners
     </h2>
@@ -63,47 +87,93 @@ Lottery AT By Lexicon.
 
 var ATID = "2526167191156684315";
 var WebWallet = "https://wallet.burst-team.us:8127";
+var CreatorRS = "BURST-ZPPL-BV2U-VVZN-8DJX7";
+var ATRS = "BURST-9XJV-PNE4-89GA-4ZP58";
+var CurrentBlock = "0";
+
 WebWallet = "https://wallet2.burstnation.com";
 WebWallet = "http://localhost:8125";
 
 $(document).ready(
     function()
     {
-        UpdateJackpot();
-        UpdatePastWinners();
+        CurrentWalletBlock();
+
     }
 );
+
+function CurrentWalletBlock()
+{
+    var queryString = WebWallet + "/burst?requestType=getBlockchainStatus";
+    $.get( queryString , function(data) { CurrentWalletBlockReturn(data); });
+}
+
+function CurrentWalletBlockReturn(data)
+{
+    var returnJson = JSON.parse(data);
+    CurrentBlock = returnJson.numberOfBlocks;
+    UpdateJackpot();
+    UpdatePastWinners();
+}
 
 function UpdateJackpot()
 {
     console.log("UpdateJackpot");
     var queryString = WebWallet + "/burst?requestType=getAT&at=" + ATID;
-    $.get( queryString , function(data) { console.log("return") ; UpdateJackpotReturn(data); });
+    $.get( queryString , function(data) { UpdateJackpotReturn(data); });
 }
 
 function UpdateJackpotReturn(data)
 {
-    console.log(data);
+    
     var returnJson = JSON.parse(data);
-    document.getElementById("CurrentJackpotPool").innerHTML = parseInt(returnJson.balanceNQT) * 0.76 + "BURST"
+    document.getElementById("CurrentJackpotPool").innerHTML = Math.round(parseInt(returnJson.balanceNQT) * 0.0000000080) + " BURST"
     UpdateEndTime(data);
 }
 
 function UpdateEndTime(data)
 {
     var returnJson = JSON.parse(data);
-    document.getElementById("EndTime").innerHTML = "Lottery ends at block " + returnJson.nextBlock  + " !";
+    var returnHTML = "<p> Current Block is " + CurrentBlock + "<br />";
+    returnHTML += "Lottery ends at Block <strong><span style='color:darkred'>" + returnJson.nextBlock  + "</span></strong> !<br />";
+    returnHTML += returnJson.nextBlock - CurrentBlock + " Blocks to go !";
+    document.getElementById("EndTime").innerHTML = returnHTML;
 }
 
 function UpdatePastWinners()
 {
     var queryString = WebWallet + "/burst?requestType=getAccountTransactions&account=" + ATID;
-    $.get( queryString , function(data) { console.log("return") ; UpdatePastWinnersReturn(data); });
+    $.get( queryString , function(data) { UpdatePastWinnersReturn(data); });
 }
 
 function UpdatePastWinnersReturn(data)
 {
-    document.getElementById("PastWinners").innerHTML = "BURST-xxxx-xxxx-xxxx-xxxxx  || 113,000 BURST || Block 122545";
+    //console.log(data);
+    var returnJson = JSON.parse(data);
+    var txs = returnJson.transactions;
+    var winners = [];
+    for (i = 0; i < txs.length; ++i)
+    {
+        var tx = txs[i];
+        if (tx.recipientRS != ATRS && tx.recipientRS != CreatorRS)
+        {
+            console.log(tx.recipientRS);
+            winners.push(tx);
+        }
+    }
+    
+    var htmlString = "";
+    for (i = 0; i < winners.length; ++i)
+    {
+        htmlString += "<p> Block ";
+        htmlString += winners[i].height;
+        htmlString += " || ";
+        htmlString += winners[i].recipientRS;
+        htmlString += " || ";
+        htmlString += winners[i].amountNQT / 100000000;
+        htmlString += " BURST</p>";
+    }
+    document.getElementById("PastWinners").innerHTML = htmlString;
 }
 </script>
 
