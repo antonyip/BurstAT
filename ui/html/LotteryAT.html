@@ -1,0 +1,104 @@
+<html>
+<head>
+<title>
+Lottery AT By ant.
+</title>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <div class="jumbotron text-center">
+        <h1 id="CurrentJackpot">
+            Current Jackpot
+        </h1>
+        <h1 id="CurrentJackpotPrice">
+            XXXXX BURST
+        </h1>
+        <h2 id="CurrentJackpotSmall">
+            You could be the next winner!
+        </h2>    
+        <h3 id="Instuctions">
+            Send 50 BURST to BURST-9XJV-PNE4-89GA-4ZP58 to join the lottery!
+        </h3>
+        <h3 id="EndTime">
+            Lottery ends at block 326343!
+        </h3>
+    </div>
+</div>
+
+<div class="container">
+    <div class="jumbotron text-center">
+    <h2>
+        Past Winners
+    </h2>
+    <h3 id="PastWinners">
+        BURST-xxxx-xxxx-xxxx-xxxxx  || 13,000 BURST || Block 322545
+    </h3>
+    </div>
+</div>
+
+<div class="container">
+    <div class="bottom-footer text-center">
+    <p>
+        Website designed by ant. Lottery is ran through Automatic Transactions (Smart Contracts).
+    </p>
+    <p>
+        Visit <a href="https://github.com/antonyip/BurstAT/">https://github.com/antonyip/BurstAT/</a> for more details.
+    </p>
+    </div>
+</div>
+
+<script>
+
+var ATID = "2526167191156684315";
+var WebWallet = "https://wallet.burst-team.us:8127";
+WebWallet = "https://wallet2.burstnation.com";
+WebWallet = "http://localhost:8125";
+
+$(document).ready(
+    function()
+    {
+        UpdateJackpot();
+        UpdateEndTime();
+        UpdatePastWinners();
+    }
+);
+
+function UpdateJackpot()
+{
+    console.log("UpdateJackpot");
+    var queryString = WebWallet + "/burst?requestType=getAT&at=" + ATID;
+    $.get( queryString , function(data) { console.log("return") ; UpdateJackpotReturn(data); });
+}
+
+function UpdateJackpotReturn(data)
+{
+    console.log(data);
+    UpdateEndTime(data);
+}
+
+function UpdateEndTime(data)
+{
+    
+}
+
+function UpdatePastWinners()
+{
+    var queryString = WebWallet + "/burst?requestType=getAccountTransactions&account=" + ATID;
+    $.get( queryString , function(data) { console.log("return") ; UpdatePastWinnersReturn(data); });
+}
+
+function UpdatePastWinnersReturn(data)
+{
+
+}
+</script>
+
+</body>
+</html>
