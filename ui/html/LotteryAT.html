@@ -12,7 +12,11 @@ Lottery By Lexicon
 <style type="text/css">
  body
  {
-    background-image: url('img/lottery/background.jpg');
+    background: blue; /* For browsers that do not support gradients */
+    background: -webkit-linear-gradient(blue, teal); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(blue, teal); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(blue, teal); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(blue, teal); /* Standard syntax */
  }
  
  .mainbody
@@ -134,9 +138,9 @@ function UpdateJackpotReturn(data)
 function UpdateEndTime(data)
 {
     var returnJson = JSON.parse(data);
-    var returnHTML = "<p> Current Block is " + CurrentBlock + "<br />";
-    returnHTML += "Lottery ends at Block <strong><span style='color:darkred'>" + returnJson.nextBlock  + "</span></strong> !<br />";
-    returnHTML += returnJson.nextBlock - CurrentBlock + " Blocks to go !";
+    var returnHTML = "<p> Current Block is " + CurrentBlock - 1 + "<br />";
+    returnHTML += "Lottery ends at Block <strong><span style='color:darkred'>" + ( returnJson.nextBlock + 1 ) + "</span></strong> !<br />";
+    returnHTML += returnJson.nextBlock - CurrentBlock - 2 + " Blocks to go !";
     document.getElementById("EndTime").innerHTML = returnHTML;
 }
 
