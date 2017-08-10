@@ -1,0 +1,59 @@
+^declare CurrentKing
+^declare TransactionID
+^declare LastTransaction
+^declare ValidTransaction
+^declare MyRandomNumber
+^declare Chance
+^declare PayOutPrice
+^declare MinLeft
+^declare CurrentBalance
+
+^comment If this is the first time running, set some default variables.
+Start:
+SET @PayOutPrice #00000001dcd65000
+SET @MinLeft #000000001dcd6500
+SET @Chance #0000000000000002
+FUN B_to_Address_of_Creator
+FUN @CurrentKing get_B1
+
+^comment when the program starts for the next time, it will start from here.
+PCS
+Update:
+
+UpdateNewPlayerLoop:
+^comment new way of grabbing transactions
+FUN A_to_Tx_after_Timestamp $LastTransaction
+^comment can save 1 burst here.
+FUN @ValidTransaction check_A_Is_Zero
+BZR $ValidTransaction :NoMoreTx
+FUN @TransactionID get_A1
+FUN @LastTransaction get_Timestamp_for_Tx_in_A
+
+^comment Random Number Generator
+SET @MyRandomNumber $TransactionID
+^comment based on random number, figure out who won.
+MOD @MyRandomNumber $Chance
+^comment only works at 50%
+BZR $MyRandomNumber :ChangeWinner
+
+UpdateNewPlayerContinue:
+^comment pay current king here.
+FUN set_B1 $CurrentKing
+FUN send_to_Address_in_B $PayOutPrice
+JMP :UpdateNewPlayerLoop
+
+ChangeWinner:
+FUN B_to_Address_of_Tx_in_A
+FUN @CurrentKing get_B1
+JMP :UpdateNewPlayerContinue
+
+^comment Transactions has been processed finished.
+NoMoreTx:
+FUN @CurrentBalance get_Current_Balance
+BLE $CurrentBalance $MinLeft :End
+SUB @CurrentBalance $MinLeft
+FUN B_to_Address_of_Creator
+FUN send_to_Address_in_B $CurrentBalance
+
+End:
+FIN
