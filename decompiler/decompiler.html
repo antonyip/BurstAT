@@ -1,19 +1,57 @@
-<html>
+<html lang="en">
 <head>
-<title>
-Anton's Decompiler
-</title>
+    <title>Burstcoin AT Decompiler</title>
+    <meta charset="utf-8">
+    <script src="decompiler.js"></script>
+
+    <style>
+        h1 {
+            text-align: center;
+        }
+        h3 {
+            margin-bottom: 5px;
+        }
+        .right {
+            float: right;
+            width: 50%;
+        }
+        .left {
+            float: left;
+            width: 50%;
+        }
+        textarea {
+            width: 100%;
+            height=50px;
+            padding: 5px 5px 5px 5px;
+            min-height: 75px;
+        }
+        button {
+            margin: 20px 0px 20px 0px;
+            padding: 5px 20px 5px 20px;
+        }
+    </style>
+
 </head>
 <body>
+ 
+    <div>
+        <h1>Burstcoin AT Decompiler</h1>
+        <h3>Paste here contract's machineCode:</h3>
+        <textarea id="codeString">01010000009999999999999999</textarea>
+        <button id="codeDecompile" onClick="javascript: DecompileCode();">Decompile it!</button>
+    </div>
 
-<input id="codeString" value="01010000009999999999999999" />
-<button id="codeDecompile" onClick="javascript: DecompileCode();">Decompile</button>
-<p id="codeOutput"></p>
-<p id="codeReadOutput"></p>
-<br />
+    <div class="left">
+        <h3>Machine code preprocessed:</h3>
+        <pre>offset opCode arg1 ... argN</pre>
+        <pre id="codeOutput"></pre>
+    </div>
 
-<script src="decompiler.js"></script>
-
+    <div class="right">
+        <h3>Decompiled code:</h3>
+        <pre>offset instruction arg1 ... argN</pre>
+        <pre id="codeReadOutput"></pre>
+    </div>
 
 </body>
 </html>
