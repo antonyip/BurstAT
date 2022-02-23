@@ -1,3 +1,5 @@
+# Please follow updated development at https://github.com/deleterium/BurstAT
+
 # BurstAT
 BURSTCOIN Automated Transactions Research and Development  
   
